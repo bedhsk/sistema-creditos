@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Cliente, Coordinador } from '@/types/database';
 import toast from 'react-hot-toast';
-import { X } from 'lucide-react';
+import { X, Save } from 'lucide-react';
 
 interface CreditoFormProps {
   onClose: () => void;
@@ -30,19 +30,37 @@ export default function CreditoForm({ onClose, onSuccess }: CreditoFormProps) {
   }, []);
 
   const fetchClientes = async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('clientes')
       .select('*')
-      .order('nombre');
-    setClientes(data || []);
+      .order('primer_nombre');
+
+    if (error) {
+      console.error('Error al cargar clientes:', error);
+      toast.error('Error al cargar clientes');
+    } else {
+      setClientes(data || []);
+    }
   };
 
   const fetchCoordinadores = async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('coordinadores')
       .select('*')
       .order('nombre');
-    setCoordinadores(data || []);
+
+    if (error) {
+      console.error('Error al cargar coordinadores:', error);
+      toast.error('Error al cargar coordinadores');
+    } else {
+      setCoordinadores(data || []);
+    }
+  };
+
+  const getNombreCompleto = (cliente: Cliente) => {
+    return `${cliente.primer_nombre} ${cliente.segundo_nombre || ''} ${
+      cliente.primer_apellido
+    } ${cliente.segundo_apellido || ''}`.trim();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -54,6 +72,7 @@ export default function CreditoForm({ onClose, onSuccess }: CreditoFormProps) {
         {
           ...formData,
           monto: parseFloat(formData.monto),
+          notas: formData.notas || null,
         },
       ]);
 
@@ -85,7 +104,7 @@ export default function CreditoForm({ onClose, onSuccess }: CreditoFormProps) {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Cliente
+              Cliente <span className="text-red-500">*</span>
             </label>
             <select
               required
@@ -98,7 +117,7 @@ export default function CreditoForm({ onClose, onSuccess }: CreditoFormProps) {
               <option value="">Seleccionar cliente</option>
               {clientes.map((cliente) => (
                 <option key={cliente.id} value={cliente.id}>
-                  {cliente.nombre}
+                  {getNombreCompleto(cliente)} - DPI: {cliente.dpi}
                 </option>
               ))}
             </select>
@@ -106,7 +125,7 @@ export default function CreditoForm({ onClose, onSuccess }: CreditoFormProps) {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Coordinador
+              Coordinador <span className="text-red-500">*</span>
             </label>
             <select
               required
@@ -127,17 +146,19 @@ export default function CreditoForm({ onClose, onSuccess }: CreditoFormProps) {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Monto
+              Monto (Q) <span className="text-red-500">*</span>
             </label>
             <input
               type="number"
               required
               step="0.01"
+              min="0"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               value={formData.monto}
               onChange={(e) =>
                 setFormData({ ...formData, monto: e.target.value })
               }
+              placeholder="0.00"
             />
           </div>
 
@@ -185,6 +206,7 @@ export default function CreditoForm({ onClose, onSuccess }: CreditoFormProps) {
               onChange={(e) =>
                 setFormData({ ...formData, notas: e.target.value })
               }
+              placeholder="Observaciones adicionales..."
             />
           </div>
 
@@ -199,9 +221,19 @@ export default function CreditoForm({ onClose, onSuccess }: CreditoFormProps) {
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50"
+              className="px-4 py-2 text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 flex items-center gap-2"
             >
-              {loading ? 'Guardando...' : 'Guardar Crédito'}
+              {loading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Guardando...
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4" />
+                  Guardar Crédito
+                </>
+              )}
             </button>
           </div>
         </form>

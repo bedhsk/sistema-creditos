@@ -1,9 +1,30 @@
 export interface Cliente {
   id: string;
-  nombre: string;
-  telefono: string;
-  email: string;
-  direccion: string;
+  // Información personal
+  celular: string;
+  dpi: string;
+  primer_nombre: string;
+  segundo_nombre?: string;
+  primer_apellido: string;
+  segundo_apellido?: string;
+  fecha_nacimiento: string;
+  estado_civil: 'Soltero' | 'Casado' | 'Divorciado' | 'Viudo' | 'Union Libre';
+  email?: string;
+
+  // Información de residencia
+  direccion_completa: string;
+  departamento: string;
+  municipio: string;
+  pais: string;
+  observacion_domicilio?: string;
+
+  // Información económica
+  ingreso_mensual?: number;
+  dependientes_economicos?: number;
+  actividad_economica?: string;
+  observacion_actividad?: string;
+
+  // Metadatos
   created_at?: string;
   updated_at?: string;
 }
