@@ -23,7 +23,10 @@ interface CreditoReciente {
   notas?: string;
   created_at?: string;
   clientes?: {
-    nombre: string;
+    primer_nombre: string;
+    segundo_nombre?: string;
+    primer_apellido: string;
+    segundo_apellido?: string;
   };
   coordinadores?: {
     nombre: string;
@@ -36,7 +39,7 @@ interface Stats {
   creditos: number;
   creditosAprobados: number;
   montoTotal: number;
-  creditosRecientes: CreditoReciente[]; // Tipo corregido
+  creditosRecientes: CreditoReciente[];
 }
 
 export default function HomePage() {
@@ -46,7 +49,7 @@ export default function HomePage() {
     creditos: 0,
     creditosAprobados: 0,
     montoTotal: 0,
-    creditosRecientes: [], // Ya no hay error de tipo
+    creditosRecientes: [],
   });
   const [loading, setLoading] = useState(true);
 
@@ -75,13 +78,18 @@ export default function HomePage() {
       const montoTotal =
         creditosData?.reduce((sum, c) => sum + Number(c.monto), 0) || 0;
 
-      // Obtener créditos recientes con tipos correctos
+      // Obtener créditos recientes con la estructura correcta de nombres
       const { data: creditosRecientes } = await supabase
         .from('creditos')
         .select(
           `
           *,
-          clientes (nombre),
+          clientes (
+            primer_nombre,
+            segundo_nombre,
+            primer_apellido,
+            segundo_apellido
+          ),
           coordinadores (nombre)
         `
         )
@@ -101,6 +109,11 @@ export default function HomePage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const getNombreCliente = (cliente: any) => {
+    if (!cliente) return 'N/A';
+    return `${cliente.primer_nombre} ${cliente.primer_apellido}`;
   };
 
   const getEstadoBadge = (estado: string) => {
@@ -188,7 +201,7 @@ export default function HomePage() {
             <div>
               <p className="text-gray-600 text-sm">Monto Total</p>
               <p className="text-2xl md:text-3xl font-bold text-gray-900 mt-1">
-                ${stats.montoTotal.toLocaleString()}
+                Q{stats.montoTotal.toLocaleString()}
               </p>
             </div>
             <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
@@ -224,7 +237,7 @@ export default function HomePage() {
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Promedio por crédito</span>
               <span className="font-semibold">
-                $
+                Q
                 {stats.creditos > 0
                   ? Math.round(
                       stats.montoTotal / stats.creditos
@@ -253,10 +266,10 @@ export default function HomePage() {
                 >
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900 truncate">
-                      {credito.clientes?.nombre || 'N/A'}
+                      {getNombreCliente(credito.clientes)}
                     </p>
                     <p className="text-xs text-gray-500">
-                      ${credito.monto.toLocaleString()}
+                      Q{credito.monto.toLocaleString()}
                     </p>
                   </div>
                   <span

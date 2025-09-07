@@ -29,6 +29,38 @@ export interface Cliente {
   updated_at?: string;
 }
 
+export interface Referencia {
+  id?: string;
+  cliente_id?: string;
+  nombre_apellido: string;
+  parentesco: string;
+  celular: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface Beneficiario {
+  id?: string;
+  cliente_id?: string;
+  nombre_apellido: string;
+  parentesco: string;
+  celular?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface Garantia {
+  id?: string;
+  cliente_id?: string;
+  nombre: string;
+  marca?: string;
+  tiempo?: string;
+  descripcion?: string;
+  valor_estimado?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface Coordinador {
   id: string;
   nombre: string;

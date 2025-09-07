@@ -2,8 +2,20 @@
 
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import { Referencia, Beneficiario, Garantia } from '@/types/database';
 import toast from 'react-hot-toast';
-import { X, User, Home, Briefcase, Save } from 'lucide-react';
+import {
+  X,
+  User,
+  Home,
+  Briefcase,
+  Save,
+  UserPlus,
+  Shield,
+  Users,
+  Plus,
+  Trash2,
+} from 'lucide-react';
 
 interface ClienteFormProps {
   onClose: () => void;
@@ -36,6 +48,22 @@ const DEPARTAMENTOS = [
   'Zacapa',
 ];
 
+const PARENTESCOS = [
+  'Padre',
+  'Madre',
+  'Hijo/a',
+  'Hermano/a',
+  'Esposo/a',
+  'Tío/a',
+  'Primo/a',
+  'Abuelo/a',
+  'Nieto/a',
+  'Amigo/a',
+  'Vecino/a',
+  'Compañero/a trabajo',
+  'Otro',
+];
+
 export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
   const [activeTab, setActiveTab] = useState('personal');
   const [loading, setLoading] = useState(false);
@@ -66,7 +94,79 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
     observacion_actividad: '',
   });
 
+  const [referencias, setReferencias] = useState<Referencia[]>([]);
+  const [beneficiarios, setBeneficiarios] = useState<Beneficiario[]>([]);
+  const [garantias, setGarantias] = useState<Garantia[]>([]);
+
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Agregar nueva referencia
+  const addReferencia = () => {
+    setReferencias([
+      ...referencias,
+      {
+        nombre_apellido: '',
+        parentesco: '',
+        celular: '',
+      },
+    ]);
+  };
+
+  const updateReferencia = (index: number, field: string, value: string) => {
+    const updated = [...referencias];
+    updated[index] = { ...updated[index], [field]: value };
+    setReferencias(updated);
+  };
+
+  const removeReferencia = (index: number) => {
+    setReferencias(referencias.filter((_, i) => i !== index));
+  };
+
+  // Agregar nuevo beneficiario
+  const addBeneficiario = () => {
+    setBeneficiarios([
+      ...beneficiarios,
+      {
+        nombre_apellido: '',
+        parentesco: '',
+        celular: '',
+      },
+    ]);
+  };
+
+  const updateBeneficiario = (index: number, field: string, value: string) => {
+    const updated = [...beneficiarios];
+    updated[index] = { ...updated[index], [field]: value };
+    setBeneficiarios(updated);
+  };
+
+  const removeBeneficiario = (index: number) => {
+    setBeneficiarios(beneficiarios.filter((_, i) => i !== index));
+  };
+
+  // Agregar nueva garantía
+  const addGarantia = () => {
+    setGarantias([
+      ...garantias,
+      {
+        nombre: '',
+        marca: '',
+        tiempo: '',
+        descripcion: '',
+        valor_estimado: 0,
+      },
+    ]);
+  };
+
+  const updateGarantia = (index: number, field: string, value: any) => {
+    const updated = [...garantias];
+    updated[index] = { ...updated[index], [field]: value };
+    setGarantias(updated);
+  };
+
+  const removeGarantia = (index: number) => {
+    setGarantias(garantias.filter((_, i) => i !== index));
+  };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -106,6 +206,14 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
       }
     }
 
+    // Validar que al menos haya una referencia
+    const referenciasValidas = referencias.filter(
+      (r) => r.nombre_apellido && r.parentesco && r.celular
+    );
+    if (referenciasValidas.length === 0) {
+      newErrors.referencias = 'Debe agregar al menos una referencia';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -130,6 +238,8 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
         errors.municipio
       ) {
         setActiveTab('residencia');
+      } else if (errors.referencias) {
+        setActiveTab('referencias');
       }
       return;
     }
@@ -137,6 +247,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
     setLoading(true);
 
     try {
+      // 1. Crear el cliente
       const dataToSend = {
         ...formData,
         ingreso_mensual: formData.ingreso_mensual
@@ -152,18 +263,69 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
         observacion_actividad: formData.observacion_actividad || null,
       };
 
-      const { error } = await supabase.from('clientes').insert([dataToSend]);
+      const { data: clienteData, error: clienteError } = await supabase
+        .from('clientes')
+        .insert([dataToSend])
+        .select()
+        .single();
 
-      if (error) {
-        if (error.message.includes('duplicate key')) {
+      if (clienteError) {
+        if (clienteError.message.includes('duplicate key')) {
           toast.error('Ya existe un cliente con ese DPI');
         } else {
-          throw error;
+          throw clienteError;
         }
         return;
       }
 
-      toast.success('Cliente creado correctamente');
+      const clienteId = clienteData.id;
+
+      // 2. Guardar referencias
+      const referenciasValidas = referencias.filter(
+        (r) => r.nombre_apellido && r.parentesco && r.celular
+      );
+      if (referenciasValidas.length > 0) {
+        const { error: refError } = await supabase.from('referencias').insert(
+          referenciasValidas.map((ref) => ({
+            ...ref,
+            cliente_id: clienteId,
+          }))
+        );
+
+        if (refError) console.error('Error al guardar referencias:', refError);
+      }
+
+      // 3. Guardar beneficiarios
+      const beneficiariosValidos = beneficiarios.filter(
+        (b) => b.nombre_apellido && b.parentesco
+      );
+      if (beneficiariosValidos.length > 0) {
+        const { error: benError } = await supabase.from('beneficiarios').insert(
+          beneficiariosValidos.map((ben) => ({
+            ...ben,
+            cliente_id: clienteId,
+          }))
+        );
+
+        if (benError)
+          console.error('Error al guardar beneficiarios:', benError);
+      }
+
+      // 4. Guardar garantías
+      const garantiasValidas = garantias.filter((g) => g.nombre);
+      if (garantiasValidas.length > 0) {
+        const { error: garError } = await supabase.from('garantias').insert(
+          garantiasValidas.map((gar) => ({
+            ...gar,
+            cliente_id: clienteId,
+            valor_estimado: gar.valor_estimado || null,
+          }))
+        );
+
+        if (garError) console.error('Error al guardar garantías:', garError);
+      }
+
+      toast.success('Cliente creado correctamente con toda su información');
       onSuccess();
     } catch (error: any) {
       console.error('Error:', error);
@@ -192,7 +354,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
-      <div className="bg-white rounded-xl w-full max-w-4xl my-8">
+      <div className="bg-white rounded-xl w-full max-w-5xl my-8">
         <div className="flex justify-between items-center p-6 border-b">
           <h3 className="text-xl font-semibold">Nuevo Cliente</h3>
           <button
@@ -204,21 +366,21 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b">
+        <div className="flex overflow-x-auto border-b">
           <button
             onClick={() => setActiveTab('personal')}
-            className={`flex-1 px-4 py-3 text-sm font-medium transition ${
+            className={`px-4 py-3 text-sm font-medium transition whitespace-nowrap ${
               activeTab === 'personal'
                 ? 'text-purple-600 border-b-2 border-purple-600 bg-purple-50'
                 : 'text-gray-600 hover:bg-gray-50'
             }`}
           >
             <User className="w-4 h-4 inline mr-2" />
-            Información Personal
+            Personal
           </button>
           <button
             onClick={() => setActiveTab('residencia')}
-            className={`flex-1 px-4 py-3 text-sm font-medium transition ${
+            className={`px-4 py-3 text-sm font-medium transition whitespace-nowrap ${
               activeTab === 'residencia'
                 ? 'text-purple-600 border-b-2 border-purple-600 bg-purple-50'
                 : 'text-gray-600 hover:bg-gray-50'
@@ -229,20 +391,54 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
           </button>
           <button
             onClick={() => setActiveTab('economica')}
-            className={`flex-1 px-4 py-3 text-sm font-medium transition ${
+            className={`px-4 py-3 text-sm font-medium transition whitespace-nowrap ${
               activeTab === 'economica'
                 ? 'text-purple-600 border-b-2 border-purple-600 bg-purple-50'
                 : 'text-gray-600 hover:bg-gray-50'
             }`}
           >
             <Briefcase className="w-4 h-4 inline mr-2" />
-            Información Económica
+            Económica
+          </button>
+          <button
+            onClick={() => setActiveTab('referencias')}
+            className={`px-4 py-3 text-sm font-medium transition whitespace-nowrap ${
+              activeTab === 'referencias'
+                ? 'text-purple-600 border-b-2 border-purple-600 bg-purple-50'
+                : 'text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            <UserPlus className="w-4 h-4 inline mr-2" />
+            Referencias
+            {errors.referencias && <span className="ml-1 text-red-500">*</span>}
+          </button>
+          <button
+            onClick={() => setActiveTab('beneficiarios')}
+            className={`px-4 py-3 text-sm font-medium transition whitespace-nowrap ${
+              activeTab === 'beneficiarios'
+                ? 'text-purple-600 border-b-2 border-purple-600 bg-purple-50'
+                : 'text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            <Users className="w-4 h-4 inline mr-2" />
+            Beneficiarios
+          </button>
+          <button
+            onClick={() => setActiveTab('garantias')}
+            className={`px-4 py-3 text-sm font-medium transition whitespace-nowrap ${
+              activeTab === 'garantias'
+                ? 'text-purple-600 border-b-2 border-purple-600 bg-purple-50'
+                : 'text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            <Shield className="w-4 h-4 inline mr-2" />
+            Garantías
           </button>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div className="p-6 max-h-[60vh] overflow-y-auto">
-            {/* Tab: Información Personal */}
+            {/* Tab: Información Personal (igual que antes) */}
             {activeTab === 'personal' && (
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -462,7 +658,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
               </div>
             )}
 
-            {/* Tab: Residencia */}
+            {/* Tab: Residencia (igual que antes) */}
             {activeTab === 'residencia' && (
               <div className="space-y-4">
                 <div>
@@ -573,7 +769,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
               </div>
             )}
 
-            {/* Tab: Información Económica */}
+            {/* Tab: Información Económica (igual que antes) */}
             {activeTab === 'economica' && (
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -650,6 +846,321 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                     placeholder="Detalles adicionales sobre la actividad económica, lugar de trabajo, antigüedad, etc."
                   />
                 </div>
+              </div>
+            )}
+
+            {/* Tab: Referencias */}
+            {activeTab === 'referencias' && (
+              <div className="space-y-4">
+                <div className="flex justify-between items-center mb-4">
+                  <div>
+                    <h4 className="font-medium text-gray-900">
+                      Referencias Personales
+                    </h4>
+                    <p className="text-sm text-gray-500">
+                      Agrega al menos una referencia
+                    </p>
+                    {errors.referencias && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.referencias}
+                      </p>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={addReferencia}
+                    className="px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm flex items-center gap-1"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Agregar
+                  </button>
+                </div>
+
+                {referencias.length === 0 ? (
+                  <div className="text-center py-8 bg-gray-50 rounded-lg">
+                    <UserPlus className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                    <p className="text-gray-500">
+                      No hay referencias agregadas
+                    </p>
+                    <button
+                      type="button"
+                      onClick={addReferencia}
+                      className="mt-2 text-purple-600 hover:text-purple-700 text-sm font-medium"
+                    >
+                      Agregar primera referencia
+                    </button>
+                  </div>
+                ) : (
+                  referencias.map((ref, index) => (
+                    <div
+                      key={index}
+                      className="border rounded-lg p-4 space-y-3"
+                    >
+                      <div className="flex justify-between items-start">
+                        <span className="text-sm font-medium text-gray-700">
+                          Referencia {index + 1}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => removeReferencia(index)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <input
+                          type="text"
+                          placeholder="Nombre y apellido *"
+                          value={ref.nombre_apellido}
+                          onChange={(e) =>
+                            updateReferencia(
+                              index,
+                              'nombre_apellido',
+                              e.target.value
+                            )
+                          }
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                        <select
+                          value={ref.parentesco}
+                          onChange={(e) =>
+                            updateReferencia(
+                              index,
+                              'parentesco',
+                              e.target.value
+                            )
+                          }
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        >
+                          <option value="">Parentesco *</option>
+                          {PARENTESCOS.map((p) => (
+                            <option key={p} value={p}>
+                              {p}
+                            </option>
+                          ))}
+                        </select>
+                        <input
+                          type="tel"
+                          placeholder="Celular *"
+                          value={ref.celular}
+                          onChange={(e) =>
+                            updateReferencia(index, 'celular', e.target.value)
+                          }
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+
+            {/* Tab: Beneficiarios */}
+            {activeTab === 'beneficiarios' && (
+              <div className="space-y-4">
+                <div className="flex justify-between items-center mb-4">
+                  <div>
+                    <h4 className="font-medium text-gray-900">Beneficiarios</h4>
+                    <p className="text-sm text-gray-500">
+                      Personas que se beneficiarán del crédito
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={addBeneficiario}
+                    className="px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm flex items-center gap-1"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Agregar
+                  </button>
+                </div>
+
+                {beneficiarios.length === 0 ? (
+                  <div className="text-center py-8 bg-gray-50 rounded-lg">
+                    <Users className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                    <p className="text-gray-500">
+                      No hay beneficiarios agregados
+                    </p>
+                    <button
+                      type="button"
+                      onClick={addBeneficiario}
+                      className="mt-2 text-purple-600 hover:text-purple-700 text-sm font-medium"
+                    >
+                      Agregar beneficiario
+                    </button>
+                  </div>
+                ) : (
+                  beneficiarios.map((ben, index) => (
+                    <div
+                      key={index}
+                      className="border rounded-lg p-4 space-y-3"
+                    >
+                      <div className="flex justify-between items-start">
+                        <span className="text-sm font-medium text-gray-700">
+                          Beneficiario {index + 1}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => removeBeneficiario(index)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <input
+                          type="text"
+                          placeholder="Nombre y apellido *"
+                          value={ben.nombre_apellido}
+                          onChange={(e) =>
+                            updateBeneficiario(
+                              index,
+                              'nombre_apellido',
+                              e.target.value
+                            )
+                          }
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                        <select
+                          value={ben.parentesco}
+                          onChange={(e) =>
+                            updateBeneficiario(
+                              index,
+                              'parentesco',
+                              e.target.value
+                            )
+                          }
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        >
+                          <option value="">Parentesco *</option>
+                          {PARENTESCOS.map((p) => (
+                            <option key={p} value={p}>
+                              {p}
+                            </option>
+                          ))}
+                        </select>
+                        <input
+                          type="tel"
+                          placeholder="Celular (opcional)"
+                          value={ben.celular || ''}
+                          onChange={(e) =>
+                            updateBeneficiario(index, 'celular', e.target.value)
+                          }
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+
+            {/* Tab: Garantías */}
+            {activeTab === 'garantias' && (
+              <div className="space-y-4">
+                <div className="flex justify-between items-center mb-4">
+                  <div>
+                    <h4 className="font-medium text-gray-900">Garantías</h4>
+                    <p className="text-sm text-gray-500">
+                      Bienes en garantía del crédito
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={addGarantia}
+                    className="px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm flex items-center gap-1"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Agregar
+                  </button>
+                </div>
+
+                {garantias.length === 0 ? (
+                  <div className="text-center py-8 bg-gray-50 rounded-lg">
+                    <Shield className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                    <p className="text-gray-500">No hay garantías agregadas</p>
+                    <button
+                      type="button"
+                      onClick={addGarantia}
+                      className="mt-2 text-purple-600 hover:text-purple-700 text-sm font-medium"
+                    >
+                      Agregar garantía
+                    </button>
+                  </div>
+                ) : (
+                  garantias.map((gar, index) => (
+                    <div
+                      key={index}
+                      className="border rounded-lg p-4 space-y-3"
+                    >
+                      <div className="flex justify-between items-start">
+                        <span className="text-sm font-medium text-gray-700">
+                          Garantía {index + 1}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => removeGarantia(index)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          placeholder="Nombre del bien *"
+                          value={gar.nombre}
+                          onChange={(e) =>
+                            updateGarantia(index, 'nombre', e.target.value)
+                          }
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Marca (opcional)"
+                          value={gar.marca || ''}
+                          onChange={(e) =>
+                            updateGarantia(index, 'marca', e.target.value)
+                          }
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Tiempo/Antigüedad (opcional)"
+                          value={gar.tiempo || ''}
+                          onChange={(e) =>
+                            updateGarantia(index, 'tiempo', e.target.value)
+                          }
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                        <input
+                          type="number"
+                          step="0.01"
+                          placeholder="Valor estimado Q (opcional)"
+                          value={gar.valor_estimado || ''}
+                          onChange={(e) =>
+                            updateGarantia(
+                              index,
+                              'valor_estimado',
+                              parseFloat(e.target.value) || 0
+                            )
+                          }
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                      </div>
+                      <textarea
+                        placeholder="Descripción adicional (opcional)"
+                        value={gar.descripcion || ''}
+                        onChange={(e) =>
+                          updateGarantia(index, 'descripcion', e.target.value)
+                        }
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        rows={2}
+                      />
+                    </div>
+                  ))
+                )}
               </div>
             )}
           </div>
