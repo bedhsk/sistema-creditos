@@ -47,7 +47,7 @@ export default function CreditoForm({ onClose, onSuccess }: CreditoFormProps) {
     const { data, error } = await supabase
       .from('coordinadores')
       .select('*')
-      .order('nombre');
+      .order('nombres');
 
     if (error) {
       console.error('Error al cargar coordinadores:', error);
@@ -61,6 +61,10 @@ export default function CreditoForm({ onClose, onSuccess }: CreditoFormProps) {
     return `${cliente.primer_nombre} ${cliente.segundo_nombre || ''} ${
       cliente.primer_apellido
     } ${cliente.segundo_apellido || ''}`.trim();
+  };
+
+  const getNombreCoordinador = (coordinador: Coordinador) => {
+    return `${coordinador.nombres} ${coordinador.apellidos}`;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -138,7 +142,7 @@ export default function CreditoForm({ onClose, onSuccess }: CreditoFormProps) {
               <option value="">Seleccionar coordinador</option>
               {coordinadores.map((coord) => (
                 <option key={coord.id} value={coord.id}>
-                  {coord.nombre}
+                  {getNombreCoordinador(coord)}
                 </option>
               ))}
             </select>

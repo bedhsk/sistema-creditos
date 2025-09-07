@@ -35,7 +35,7 @@ export default function CreditosPage() {
             dpi,
             celular
           ),
-          coordinadores (nombre)
+          coordinadores (nombres)
         `
         )
         .order('created_at', { ascending: false });
@@ -86,6 +86,11 @@ export default function CreditosPage() {
     return `${cliente.primer_nombre} ${cliente.primer_apellido}`;
   };
 
+  const getNombreCoordinador = (coordinador: any) => {
+    if (!coordinador) return 'N/A';
+    return `${coordinador.nombres} ${coordinador.apellidos}`;
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -96,7 +101,8 @@ export default function CreditosPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
+      {/* Header - Desktop */}
+      <div className="hidden sm:flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Créditos</h1>
           <p className="text-gray-600 mt-1">
@@ -112,6 +118,24 @@ export default function CreditosPage() {
         </button>
       </div>
 
+      {/* Header - Mobile */}
+      <div className="sm:hidden mb-6">
+        <div className="mb-4">
+          <h1 className="text-2xl font-bold text-gray-900">Créditos</h1>
+          <p className="text-gray-600 text-sm mt-1">
+            Registra y da seguimiento a los créditos
+          </p>
+        </div>
+        <button
+          onClick={() => setShowForm(true)}
+          className="w-full bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition flex items-center justify-center gap-2"
+        >
+          <Plus className="w-5 h-5" />
+          Nuevo Crédito
+        </button>
+      </div>
+
+      {/* Resto del componente igual... */}
       {creditos.length === 0 ? (
         <div className="bg-white rounded-lg shadow p-12 text-center">
           <DollarSign className="w-16 h-16 text-gray-400 mx-auto mb-4" />
@@ -172,7 +196,7 @@ export default function CreditosPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-500">
-                        {credito.coordinadores?.nombre || 'N/A'}
+                        {getNombreCoordinador(credito.coordinadores)}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -244,7 +268,7 @@ export default function CreditosPage() {
                   <div className="flex justify-between">
                     <span className="text-gray-600">Coordinador:</span>
                     <span className="font-medium">
-                      {credito.coordinadores?.nombre || 'N/A'}
+                      {getNombreCoordinador(credito.coordinadores) || 'N/A'}
                     </span>
                   </div>
                   <div className="flex justify-between">

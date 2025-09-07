@@ -353,26 +353,26 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
-      <div className="bg-white rounded-xl w-full max-w-5xl my-8">
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-xl w-full max-w-5xl max-h-[90vh] flex flex-col">
         <div className="flex justify-between items-center p-6 border-b">
           <h3 className="text-xl font-semibold">Nuevo Cliente</h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-gray-400 hover:text-gray-600 transition-colors"
           >
             <X className="w-6 h-6" />
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex overflow-x-auto border-b">
+        <div className="flex overflow-x-auto border-b bg-gray-50">
           <button
             onClick={() => setActiveTab('personal')}
-            className={`px-4 py-3 text-sm font-medium transition whitespace-nowrap ${
+            className={`px-4 py-3 text-sm font-medium transition-all whitespace-nowrap min-w-[120px] ${
               activeTab === 'personal'
-                ? 'text-purple-600 border-b-2 border-purple-600 bg-purple-50'
-                : 'text-gray-600 hover:bg-gray-50'
+                ? 'text-purple-600 border-b-2 border-purple-600 bg-white'
+                : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
             <User className="w-4 h-4 inline mr-2" />
@@ -380,10 +380,10 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
           </button>
           <button
             onClick={() => setActiveTab('residencia')}
-            className={`px-4 py-3 text-sm font-medium transition whitespace-nowrap ${
+            className={`px-4 py-3 text-sm font-medium transition-all whitespace-nowrap min-w-[120px] ${
               activeTab === 'residencia'
-                ? 'text-purple-600 border-b-2 border-purple-600 bg-purple-50'
-                : 'text-gray-600 hover:bg-gray-50'
+                ? 'text-purple-600 border-b-2 border-purple-600 bg-white'
+                : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
             <Home className="w-4 h-4 inline mr-2" />
@@ -391,10 +391,10 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
           </button>
           <button
             onClick={() => setActiveTab('economica')}
-            className={`px-4 py-3 text-sm font-medium transition whitespace-nowrap ${
+            className={`px-4 py-3 text-sm font-medium transition-all whitespace-nowrap min-w-[120px] ${
               activeTab === 'economica'
-                ? 'text-purple-600 border-b-2 border-purple-600 bg-purple-50'
-                : 'text-gray-600 hover:bg-gray-50'
+                ? 'text-purple-600 border-b-2 border-purple-600 bg-white'
+                : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
             <Briefcase className="w-4 h-4 inline mr-2" />
@@ -402,10 +402,10 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
           </button>
           <button
             onClick={() => setActiveTab('referencias')}
-            className={`px-4 py-3 text-sm font-medium transition whitespace-nowrap ${
+            className={`px-4 py-3 text-sm font-medium transition-all whitespace-nowrap min-w-[120px] ${
               activeTab === 'referencias'
-                ? 'text-purple-600 border-b-2 border-purple-600 bg-purple-50'
-                : 'text-gray-600 hover:bg-gray-50'
+                ? 'text-purple-600 border-b-2 border-purple-600 bg-white'
+                : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
             <UserPlus className="w-4 h-4 inline mr-2" />
@@ -414,10 +414,10 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
           </button>
           <button
             onClick={() => setActiveTab('beneficiarios')}
-            className={`px-4 py-3 text-sm font-medium transition whitespace-nowrap ${
+            className={`px-4 py-3 text-sm font-medium transition-all whitespace-nowrap min-w-[120px] ${
               activeTab === 'beneficiarios'
-                ? 'text-purple-600 border-b-2 border-purple-600 bg-purple-50'
-                : 'text-gray-600 hover:bg-gray-50'
+                ? 'text-purple-600 border-b-2 border-purple-600 bg-white'
+                : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
             <Users className="w-4 h-4 inline mr-2" />
@@ -425,10 +425,10 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
           </button>
           <button
             onClick={() => setActiveTab('garantias')}
-            className={`px-4 py-3 text-sm font-medium transition whitespace-nowrap ${
+            className={`px-4 py-3 text-sm font-medium transition-all whitespace-nowrap min-w-[120px] ${
               activeTab === 'garantias'
-                ? 'text-purple-600 border-b-2 border-purple-600 bg-purple-50'
-                : 'text-gray-600 hover:bg-gray-50'
+                ? 'text-purple-600 border-b-2 border-purple-600 bg-white'
+                : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
             <Shield className="w-4 h-4 inline mr-2" />
@@ -436,11 +436,18 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="p-6 max-h-[60vh] overflow-y-auto">
-            {/* Tab: Información Personal (igual que antes) */}
+        <form
+          onSubmit={handleSubmit}
+          className="flex-1 flex flex-col overflow-hidden"
+        >
+          {/* Contenedor con altura fija para el contenido */}
+          <div
+            className="flex-1 overflow-y-auto p-6"
+            style={{ minHeight: '400px', maxHeight: '500px' }}
+          >
+            {/* Tab: Información Personal */}
             {activeTab === 'personal' && (
-              <div className="space-y-4">
+              <div className="space-y-4 animate-fadeIn">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -455,7 +462,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                           dpi: formatDPI(e.target.value),
                         })
                       }
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
                         errors.dpi
                           ? 'border-red-300 focus:ring-red-500'
                           : 'border-gray-300 focus:ring-purple-500'
@@ -477,7 +484,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                       onChange={(e) =>
                         setFormData({ ...formData, celular: e.target.value })
                       }
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
                         errors.celular
                           ? 'border-red-300 focus:ring-red-500'
                           : 'border-gray-300 focus:ring-purple-500'
@@ -506,7 +513,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                           primer_nombre: e.target.value,
                         })
                       }
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
                         errors.primer_nombre
                           ? 'border-red-300 focus:ring-red-500'
                           : 'border-gray-300 focus:ring-purple-500'
@@ -532,7 +539,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                           segundo_nombre: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
                     />
                   </div>
                 </div>
@@ -551,7 +558,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                           primer_apellido: e.target.value,
                         })
                       }
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
                         errors.primer_apellido
                           ? 'border-red-300 focus:ring-red-500'
                           : 'border-gray-300 focus:ring-purple-500'
@@ -577,7 +584,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                           segundo_apellido: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
                     />
                   </div>
                 </div>
@@ -597,7 +604,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                           fecha_nacimiento: e.target.value,
                         })
                       }
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
                         errors.fecha_nacimiento
                           ? 'border-red-300 focus:ring-red-500'
                           : 'border-gray-300 focus:ring-purple-500'
@@ -623,7 +630,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                           estado_civil: e.target.value as any,
                         })
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
                     >
                       <option value="Soltero">Soltero/a</option>
                       <option value="Casado">Casado/a</option>
@@ -644,7 +651,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })
                     }
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
                       errors.email
                         ? 'border-red-300 focus:ring-red-500'
                         : 'border-gray-300 focus:ring-purple-500'
@@ -658,9 +665,9 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
               </div>
             )}
 
-            {/* Tab: Residencia (igual que antes) */}
+            {/* Tab: Residencia */}
             {activeTab === 'residencia' && (
-              <div className="space-y-4">
+              <div className="space-y-4 animate-fadeIn">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Dirección Completa <span className="text-red-500">*</span>
@@ -673,7 +680,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                         direccion_completa: e.target.value,
                       })
                     }
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
                       errors.direccion_completa
                         ? 'border-red-300 focus:ring-red-500'
                         : 'border-gray-300 focus:ring-purple-500'
@@ -701,7 +708,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                           departamento: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
                     >
                       {DEPARTAMENTOS.map((dept) => (
                         <option key={dept} value={dept}>
@@ -721,7 +728,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                       onChange={(e) =>
                         setFormData({ ...formData, municipio: e.target.value })
                       }
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
                         errors.municipio
                           ? 'border-red-300 focus:ring-red-500'
                           : 'border-gray-300 focus:ring-purple-500'
@@ -745,7 +752,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                     onChange={(e) =>
                       setFormData({ ...formData, pais: e.target.value })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
                   />
                 </div>
 
@@ -761,7 +768,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                         observacion_domicilio: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
                     rows={2}
                     placeholder="Referencias adicionales, puntos de referencia, etc."
                   />
@@ -769,9 +776,9 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
               </div>
             )}
 
-            {/* Tab: Información Económica (igual que antes) */}
+            {/* Tab: Información Económica */}
             {activeTab === 'economica' && (
-              <div className="space-y-4">
+              <div className="space-y-4 animate-fadeIn">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -787,7 +794,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                           ingreso_mensual: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
                       placeholder="0.00"
                     />
                   </div>
@@ -806,7 +813,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                           dependientes_economicos: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
                     />
                   </div>
                 </div>
@@ -824,7 +831,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                         actividad_economica: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
                     placeholder="Empleado, Comerciante, Profesional independiente, etc."
                   />
                 </div>
@@ -841,7 +848,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                         observacion_actividad: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
                     rows={3}
                     placeholder="Detalles adicionales sobre la actividad económica, lugar de trabajo, antigüedad, etc."
                   />
@@ -851,7 +858,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
 
             {/* Tab: Referencias */}
             {activeTab === 'referencias' && (
-              <div className="space-y-4">
+              <div className="space-y-4 animate-fadeIn">
                 <div className="flex justify-between items-center mb-4">
                   <div>
                     <h4 className="font-medium text-gray-900">
@@ -869,7 +876,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                   <button
                     type="button"
                     onClick={addReferencia}
-                    className="px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm flex items-center gap-1"
+                    className="px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm flex items-center gap-1 transition-colors"
                   >
                     <Plus className="w-4 h-4" />
                     Agregar
@@ -877,7 +884,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                 </div>
 
                 {referencias.length === 0 ? (
-                  <div className="text-center py-8 bg-gray-50 rounded-lg">
+                  <div className="text-center py-12 bg-gray-50 rounded-lg">
                     <UserPlus className="w-12 h-12 text-gray-400 mx-auto mb-2" />
                     <p className="text-gray-500">
                       No hay referencias agregadas
@@ -891,74 +898,76 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                     </button>
                   </div>
                 ) : (
-                  referencias.map((ref, index) => (
-                    <div
-                      key={index}
-                      className="border rounded-lg p-4 space-y-3"
-                    >
-                      <div className="flex justify-between items-start">
-                        <span className="text-sm font-medium text-gray-700">
-                          Referencia {index + 1}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => removeReferencia(index)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                  <div className="space-y-3">
+                    {referencias.map((ref, index) => (
+                      <div
+                        key={index}
+                        className="border rounded-lg p-4 space-y-3 bg-white"
+                      >
+                        <div className="flex justify-between items-start">
+                          <span className="text-sm font-medium text-gray-700">
+                            Referencia {index + 1}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => removeReferencia(index)}
+                            className="text-red-500 hover:text-red-700 transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <input
+                            type="text"
+                            placeholder="Nombre y apellido *"
+                            value={ref.nombre_apellido}
+                            onChange={(e) =>
+                              updateReferencia(
+                                index,
+                                'nombre_apellido',
+                                e.target.value
+                              )
+                            }
+                            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
+                          />
+                          <select
+                            value={ref.parentesco}
+                            onChange={(e) =>
+                              updateReferencia(
+                                index,
+                                'parentesco',
+                                e.target.value
+                              )
+                            }
+                            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
+                          >
+                            <option value="">Parentesco *</option>
+                            {PARENTESCOS.map((p) => (
+                              <option key={p} value={p}>
+                                {p}
+                              </option>
+                            ))}
+                          </select>
+                          <input
+                            type="tel"
+                            placeholder="Celular *"
+                            value={ref.celular}
+                            onChange={(e) =>
+                              updateReferencia(index, 'celular', e.target.value)
+                            }
+                            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
+                          />
+                        </div>
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <input
-                          type="text"
-                          placeholder="Nombre y apellido *"
-                          value={ref.nombre_apellido}
-                          onChange={(e) =>
-                            updateReferencia(
-                              index,
-                              'nombre_apellido',
-                              e.target.value
-                            )
-                          }
-                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        />
-                        <select
-                          value={ref.parentesco}
-                          onChange={(e) =>
-                            updateReferencia(
-                              index,
-                              'parentesco',
-                              e.target.value
-                            )
-                          }
-                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        >
-                          <option value="">Parentesco *</option>
-                          {PARENTESCOS.map((p) => (
-                            <option key={p} value={p}>
-                              {p}
-                            </option>
-                          ))}
-                        </select>
-                        <input
-                          type="tel"
-                          placeholder="Celular *"
-                          value={ref.celular}
-                          onChange={(e) =>
-                            updateReferencia(index, 'celular', e.target.value)
-                          }
-                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        />
-                      </div>
-                    </div>
-                  ))
+                    ))}
+                  </div>
                 )}
               </div>
             )}
 
             {/* Tab: Beneficiarios */}
             {activeTab === 'beneficiarios' && (
-              <div className="space-y-4">
+              <div className="space-y-4 animate-fadeIn">
                 <div className="flex justify-between items-center mb-4">
                   <div>
                     <h4 className="font-medium text-gray-900">Beneficiarios</h4>
@@ -969,7 +978,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                   <button
                     type="button"
                     onClick={addBeneficiario}
-                    className="px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm flex items-center gap-1"
+                    className="px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm flex items-center gap-1 transition-colors"
                   >
                     <Plus className="w-4 h-4" />
                     Agregar
@@ -977,7 +986,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                 </div>
 
                 {beneficiarios.length === 0 ? (
-                  <div className="text-center py-8 bg-gray-50 rounded-lg">
+                  <div className="text-center py-12 bg-gray-50 rounded-lg">
                     <Users className="w-12 h-12 text-gray-400 mx-auto mb-2" />
                     <p className="text-gray-500">
                       No hay beneficiarios agregados
@@ -991,74 +1000,80 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                     </button>
                   </div>
                 ) : (
-                  beneficiarios.map((ben, index) => (
-                    <div
-                      key={index}
-                      className="border rounded-lg p-4 space-y-3"
-                    >
-                      <div className="flex justify-between items-start">
-                        <span className="text-sm font-medium text-gray-700">
-                          Beneficiario {index + 1}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => removeBeneficiario(index)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                  <div className="space-y-3">
+                    {beneficiarios.map((ben, index) => (
+                      <div
+                        key={index}
+                        className="border rounded-lg p-4 space-y-3 bg-white"
+                      >
+                        <div className="flex justify-between items-start">
+                          <span className="text-sm font-medium text-gray-700">
+                            Beneficiario {index + 1}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => removeBeneficiario(index)}
+                            className="text-red-500 hover:text-red-700 transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <input
+                            type="text"
+                            placeholder="Nombre y apellido *"
+                            value={ben.nombre_apellido}
+                            onChange={(e) =>
+                              updateBeneficiario(
+                                index,
+                                'nombre_apellido',
+                                e.target.value
+                              )
+                            }
+                            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
+                          />
+                          <select
+                            value={ben.parentesco}
+                            onChange={(e) =>
+                              updateBeneficiario(
+                                index,
+                                'parentesco',
+                                e.target.value
+                              )
+                            }
+                            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
+                          >
+                            <option value="">Parentesco *</option>
+                            {PARENTESCOS.map((p) => (
+                              <option key={p} value={p}>
+                                {p}
+                              </option>
+                            ))}
+                          </select>
+                          <input
+                            type="tel"
+                            placeholder="Celular (opcional)"
+                            value={ben.celular || ''}
+                            onChange={(e) =>
+                              updateBeneficiario(
+                                index,
+                                'celular',
+                                e.target.value
+                              )
+                            }
+                            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
+                          />
+                        </div>
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <input
-                          type="text"
-                          placeholder="Nombre y apellido *"
-                          value={ben.nombre_apellido}
-                          onChange={(e) =>
-                            updateBeneficiario(
-                              index,
-                              'nombre_apellido',
-                              e.target.value
-                            )
-                          }
-                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        />
-                        <select
-                          value={ben.parentesco}
-                          onChange={(e) =>
-                            updateBeneficiario(
-                              index,
-                              'parentesco',
-                              e.target.value
-                            )
-                          }
-                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        >
-                          <option value="">Parentesco *</option>
-                          {PARENTESCOS.map((p) => (
-                            <option key={p} value={p}>
-                              {p}
-                            </option>
-                          ))}
-                        </select>
-                        <input
-                          type="tel"
-                          placeholder="Celular (opcional)"
-                          value={ben.celular || ''}
-                          onChange={(e) =>
-                            updateBeneficiario(index, 'celular', e.target.value)
-                          }
-                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        />
-                      </div>
-                    </div>
-                  ))
+                    ))}
+                  </div>
                 )}
               </div>
             )}
 
             {/* Tab: Garantías */}
             {activeTab === 'garantias' && (
-              <div className="space-y-4">
+              <div className="space-y-4 animate-fadeIn">
                 <div className="flex justify-between items-center mb-4">
                   <div>
                     <h4 className="font-medium text-gray-900">Garantías</h4>
@@ -1069,7 +1084,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                   <button
                     type="button"
                     onClick={addGarantia}
-                    className="px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm flex items-center gap-1"
+                    className="px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm flex items-center gap-1 transition-colors"
                   >
                     <Plus className="w-4 h-4" />
                     Agregar
@@ -1077,7 +1092,7 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                 </div>
 
                 {garantias.length === 0 ? (
-                  <div className="text-center py-8 bg-gray-50 rounded-lg">
+                  <div className="text-center py-12 bg-gray-50 rounded-lg">
                     <Shield className="w-12 h-12 text-gray-400 mx-auto mb-2" />
                     <p className="text-gray-500">No hay garantías agregadas</p>
                     <button
@@ -1089,83 +1104,85 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                     </button>
                   </div>
                 ) : (
-                  garantias.map((gar, index) => (
-                    <div
-                      key={index}
-                      className="border rounded-lg p-4 space-y-3"
-                    >
-                      <div className="flex justify-between items-start">
-                        <span className="text-sm font-medium text-gray-700">
-                          Garantía {index + 1}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => removeGarantia(index)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                  <div className="space-y-3">
+                    {garantias.map((gar, index) => (
+                      <div
+                        key={index}
+                        className="border rounded-lg p-4 space-y-3 bg-white"
+                      >
+                        <div className="flex justify-between items-start">
+                          <span className="text-sm font-medium text-gray-700">
+                            Garantía {index + 1}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => removeGarantia(index)}
+                            className="text-red-500 hover:text-red-700 transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <input
+                            type="text"
+                            placeholder="Nombre del bien *"
+                            value={gar.nombre}
+                            onChange={(e) =>
+                              updateGarantia(index, 'nombre', e.target.value)
+                            }
+                            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Marca (opcional)"
+                            value={gar.marca || ''}
+                            onChange={(e) =>
+                              updateGarantia(index, 'marca', e.target.value)
+                            }
+                            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Tiempo/Antigüedad (opcional)"
+                            value={gar.tiempo || ''}
+                            onChange={(e) =>
+                              updateGarantia(index, 'tiempo', e.target.value)
+                            }
+                            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
+                          />
+                          <input
+                            type="number"
+                            step="0.01"
+                            placeholder="Valor estimado Q (opcional)"
+                            value={gar.valor_estimado || ''}
+                            onChange={(e) =>
+                              updateGarantia(
+                                index,
+                                'valor_estimado',
+                                parseFloat(e.target.value) || 0
+                              )
+                            }
+                            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
+                          />
+                        </div>
+                        <textarea
+                          placeholder="Descripción adicional (opcional)"
+                          value={gar.descripcion || ''}
+                          onChange={(e) =>
+                            updateGarantia(index, 'descripcion', e.target.value)
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
+                          rows={2}
+                        />
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <input
-                          type="text"
-                          placeholder="Nombre del bien *"
-                          value={gar.nombre}
-                          onChange={(e) =>
-                            updateGarantia(index, 'nombre', e.target.value)
-                          }
-                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        />
-                        <input
-                          type="text"
-                          placeholder="Marca (opcional)"
-                          value={gar.marca || ''}
-                          onChange={(e) =>
-                            updateGarantia(index, 'marca', e.target.value)
-                          }
-                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        />
-                        <input
-                          type="text"
-                          placeholder="Tiempo/Antigüedad (opcional)"
-                          value={gar.tiempo || ''}
-                          onChange={(e) =>
-                            updateGarantia(index, 'tiempo', e.target.value)
-                          }
-                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        />
-                        <input
-                          type="number"
-                          step="0.01"
-                          placeholder="Valor estimado Q (opcional)"
-                          value={gar.valor_estimado || ''}
-                          onChange={(e) =>
-                            updateGarantia(
-                              index,
-                              'valor_estimado',
-                              parseFloat(e.target.value) || 0
-                            )
-                          }
-                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        />
-                      </div>
-                      <textarea
-                        placeholder="Descripción adicional (opcional)"
-                        value={gar.descripcion || ''}
-                        onChange={(e) =>
-                          updateGarantia(index, 'descripcion', e.target.value)
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        rows={2}
-                      />
-                    </div>
-                  ))
+                    ))}
+                  </div>
                 )}
               </div>
             )}
           </div>
 
-          {/* Footer con botones */}
+          {/* Footer con botones - Siempre visible */}
           <div className="flex justify-between items-center p-6 border-t bg-gray-50">
             <div className="text-sm text-gray-600">
               <span className="text-red-500">*</span> Campos obligatorios
@@ -1174,14 +1191,14 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="px-4 py-2 text-white bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-50 flex items-center gap-2"
+                className="px-4 py-2 text-white bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-50 flex items-center gap-2 transition-colors"
               >
                 {loading ? (
                   <>

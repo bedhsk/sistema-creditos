@@ -29,6 +29,26 @@ export interface Cliente {
   updated_at?: string;
 }
 
+export interface Coordinador {
+  id: string;
+  // Información personal
+  nombres: string;
+  apellidos: string;
+  celular: string;
+  fecha_contratacion: string;
+  email: string;
+
+  // Información de residencia
+  departamento: string;
+  municipio: string;
+  pais: string;
+  direccion: string;
+
+  // Metadatos
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface Referencia {
   id?: string;
   cliente_id?: string;
@@ -57,15 +77,6 @@ export interface Garantia {
   tiempo?: string;
   descripcion?: string;
   valor_estimado?: number;
-  created_at?: string;
-  updated_at?: string;
-}
-
-export interface Coordinador {
-  id: string;
-  nombre: string;
-  email: string;
-  telefono: string;
   created_at?: string;
   updated_at?: string;
 }
