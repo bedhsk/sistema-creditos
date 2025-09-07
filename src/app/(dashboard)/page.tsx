@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+
+import toast from 'react-hot-toast';
 import { supabase } from '@/lib/supabase';
 import {
   Users,
@@ -41,8 +43,7 @@ interface Stats {
   montoTotal: number;
   creditosRecientes: CreditoReciente[];
 }
-
-export default function HomePage() {
+export default function DashboardPage() {
   const [stats, setStats] = useState<Stats>({
     clientes: 0,
     coordinadores: 0,

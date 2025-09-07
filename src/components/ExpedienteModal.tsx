@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import {
   Cliente,
@@ -45,7 +46,7 @@ export default function ExpedienteModal({
   const [loading, setLoading] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const fetchAllData = async () => {
+  const fetchAllData = useCallback(async () => {
     setLoading(true);
     try {
       await Promise.all([
@@ -58,7 +59,7 @@ export default function ExpedienteModal({
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchAllData();
@@ -110,20 +111,7 @@ export default function ExpedienteModal({
     }
   };
 
-  const fetchGarantias = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('garantias')
-        .select('*')
-        .eq('cliente_id', cliente.id)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setGarantias(data || []);
-    } catch (error) {
-      console.error('Error al cargar garantías:', error);
-    }
-  };
+  // fetchGarantias removed because it was never used
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
@@ -516,14 +504,14 @@ export default function ExpedienteModal({
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {referencias.map((ref, index) => (
+                      {referencias.map((ref, idx) => (
                         <div
                           key={ref.id}
                           className="bg-white border rounded-lg p-4"
                         >
                           <div className="flex items-start justify-between mb-2">
                             <h4 className="font-medium text-gray-900">
-                              Referencia {index + 1}
+                              Referencia {idx + 1}
                             </h4>
                             <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
                               {ref.parentesco}
@@ -565,14 +553,14 @@ export default function ExpedienteModal({
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {beneficiarios.map((ben, index) => (
+                      {beneficiarios.map((ben, idx) => (
                         <div
                           key={ben.id}
                           className="bg-white border rounded-lg p-4"
                         >
                           <div className="flex items-start justify-between mb-2">
                             <h4 className="font-medium text-gray-900">
-                              Beneficiario {index + 1}
+                              Beneficiario {idx + 1}
                             </h4>
                             <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded">
                               {ben.parentesco}
@@ -616,7 +604,7 @@ export default function ExpedienteModal({
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {garantias.map((gar, index) => (
+                      {garantias.map((gar) => (
                         <div
                           key={gar.id}
                           className="bg-white border rounded-lg p-4"

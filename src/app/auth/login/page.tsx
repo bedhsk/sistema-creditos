@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
+import { createPagesBrowserClient } from '@supabase/auth-helpers-nextjs';
 import toast from 'react-hot-toast';
 import { Lock, Mail, Eye, EyeOff, CreditCard, AlertCircle } from 'lucide-react';
 
@@ -14,6 +14,8 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [attempts, setAttempts] = useState(0);
+  // Usar el helper de Supabase para el browser
+  const supabase = createPagesBrowserClient();
 
   // Limpiar error cuando el usuario empiece a escribir
   // Remove error when user starts typing
@@ -27,18 +29,25 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const { error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      console.debug('[LOGIN] Intentando login con:', { email, password });
+      const { data, error: authError } = await supabase.auth.signInWithPassword(
+        {
+          email,
+          password,
+        }
+      );
+      console.debug('[LOGIN] Resultado de signInWithPassword:', {
+        data,
+        authError,
       });
 
       if (authError) {
         setAttempts((prev) => prev + 1);
+        console.warn('[LOGIN] Error de autenticación:', authError.message);
 
         // Mensajes de error personalizados según el tipo de error
         if (authError.message.includes('Invalid login credentials')) {
           setError('Credenciales incorrectas. Verifica tu email y contraseña.');
-
           if (attempts >= 2) {
             setError(
               'Credenciales incorrectas. Si olvidaste tu contraseña, contacta al administrador.'
@@ -69,6 +78,7 @@ export default function LoginPage() {
       }
 
       // Login exitoso
+      console.info('[LOGIN] Login exitoso, redirigiendo...');
       toast.success('¡Bienvenido! Redirigiendo...');
 
       // Pequeña espera para que el usuario vea el mensaje
@@ -77,7 +87,7 @@ export default function LoginPage() {
         router.refresh();
       }, 1000);
     } catch (error: unknown) {
-      console.error('Error de autenticación:', error);
+      console.error('[LOGIN] Error de autenticación (catch):', error);
 
       // Toast adicional para errores graves
       if (attempts >= 4) {
@@ -90,6 +100,7 @@ export default function LoginPage() {
       }
     } finally {
       setLoading(false);
+      console.debug('[LOGIN] setLoading(false) ejecutado');
     }
   };
 
@@ -146,7 +157,7 @@ export default function LoginPage() {
                     setEmail(e.target.value);
                     if (error) setError('');
                   }}
-                  className={`block w-full pl-10 pr-3 py-3 border rounded-lg focus:outline-none focus:ring-2 transition ${
+                  className={`text-black block w-full pl-10 pr-3 py-3 border rounded-lg focus:outline-none focus:ring-2 transition ${
                     error && !isValidEmail(email) && email.length > 0
                       ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
                       : 'border-gray-300 focus:ring-purple-500 focus:border-transparent'
@@ -178,7 +189,7 @@ export default function LoginPage() {
                     setPassword(e.target.value);
                     if (error) setError('');
                   }}
-                  className={`block w-full pl-10 pr-10 py-3 border rounded-lg focus:outline-none focus:ring-2 transition ${
+                  className={`text-black block w-full pl-10 pr-10 py-3 border rounded-lg focus:outline-none focus:ring-2 transition ${
                     error
                       ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
                       : 'border-gray-300 focus:ring-purple-500 focus:border-transparent'

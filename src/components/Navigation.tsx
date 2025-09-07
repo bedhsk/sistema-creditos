@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
+import { createPagesBrowserClient } from '@supabase/auth-helpers-nextjs';
 import toast from 'react-hot-toast';
 import {
   Menu,
@@ -23,9 +23,11 @@ export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const supabase = createPagesBrowserClient();
 
   useEffect(() => {
     getUserEmail();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getUserEmail = async () => {
@@ -37,11 +39,10 @@ export default function Navigation() {
 
   const handleLogout = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-
+      await supabase.auth.signOut();
       toast.success('Sesión cerrada correctamente');
       router.push('/auth/login');
+      router.refresh();
     } catch (error) {
       console.error('Error:', error);
       toast.error('Error al cerrar sesión');
@@ -149,7 +150,7 @@ export default function Navigation() {
                     key={link.href}
                     href={link.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`block px-4 py-3 text-base font-medium transition flex items-center space-x-3 ${
+                    className={`px-4 py-3 text-base font-medium transition flex items-center space-x-3 ${
                       pathname === link.href
                         ? 'bg-gradient-to-r from-purple-50 to-blue-50 text-purple-600 border-l-4 border-purple-600'
                         : 'text-gray-700 hover:bg-gray-50'
