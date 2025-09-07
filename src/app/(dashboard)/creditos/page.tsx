@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { createPagesBrowserClient } from '@supabase/auth-helpers-nextjs';
+const supabase = createPagesBrowserClient();
 import CreditoForm from '@/components/CreditoForm';
 import EditarCreditoModal from '@/components/EditarCreditoModal';
 import { Credito } from '@/types/database';

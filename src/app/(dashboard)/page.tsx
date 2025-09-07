@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 import toast from 'react-hot-toast';
-import { supabase } from '@/lib/supabase';
+import { createPagesBrowserClient } from '@supabase/auth-helpers-nextjs';
 import {
   Users,
   UserCheck,
@@ -44,6 +44,7 @@ interface Stats {
   creditosRecientes: CreditoReciente[];
 }
 export default function DashboardPage() {
+  const supabase = createPagesBrowserClient();
   const [stats, setStats] = useState<Stats>({
     clientes: 0,
     coordinadores: 0,

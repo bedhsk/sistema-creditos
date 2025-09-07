@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { createPagesBrowserClient } from '@supabase/auth-helpers-nextjs';
+const supabase = createPagesBrowserClient();
 import CoordinadorForm from '@/components/CoordinadorForm';
 import { Coordinador } from '@/types/database';
 import toast from 'react-hot-toast';
