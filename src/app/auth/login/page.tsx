@@ -16,9 +16,10 @@ export default function LoginPage() {
   const [attempts, setAttempts] = useState(0);
 
   // Limpiar error cuando el usuario empiece a escribir
+  // Remove error when user starts typing
   useEffect(() => {
-    if (error) setError('');
-  }, [email, password, error]);
+    setError('');
+  }, [email, password]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -141,7 +142,10 @@ export default function LoginPage() {
                   type="email"
                   required
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (error) setError('');
+                  }}
                   className={`block w-full pl-10 pr-3 py-3 border rounded-lg focus:outline-none focus:ring-2 transition ${
                     error && !isValidEmail(email) && email.length > 0
                       ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
@@ -170,7 +174,10 @@ export default function LoginPage() {
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (error) setError('');
+                  }}
                   className={`block w-full pl-10 pr-10 py-3 border rounded-lg focus:outline-none focus:ring-2 transition ${
                     error
                       ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
