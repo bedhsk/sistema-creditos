@@ -168,7 +168,7 @@ export default function ClientesPage() {
                 No se encontraron resultados
               </h3>
               <p className="text-gray-500">
-                No hay clientes que coincidan con "{searchTerm}"
+                No hay clientes que coincidan con &quot;{searchTerm}&quot;
               </p>
             </>
           ) : (

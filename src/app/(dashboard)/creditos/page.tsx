@@ -81,12 +81,17 @@ export default function CreditosPage() {
     return styles[estado as keyof typeof styles] || 'bg-gray-100 text-gray-800';
   };
 
-  const getNombreCliente = (cliente: any) => {
+  type Cliente = { primer_nombre: string; primer_apellido: string };
+  type Coordinador = { nombres: string; apellidos: string };
+
+  const getNombreCliente = (cliente: Cliente | null | undefined) => {
     if (!cliente) return 'N/A';
     return `${cliente.primer_nombre} ${cliente.primer_apellido}`;
   };
 
-  const getNombreCoordinador = (coordinador: any) => {
+  const getNombreCoordinador = (
+    coordinador: Coordinador | null | undefined
+  ) => {
     if (!coordinador) return 'N/A';
     return `${coordinador.nombres} ${coordinador.apellidos}`;
   };

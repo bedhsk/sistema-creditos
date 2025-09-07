@@ -122,9 +122,13 @@ export default function CoordinadorForm({
 
       toast.success('Coordinador creado correctamente');
       onSuccess();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error:', error);
-      toast.error(error.message || 'Error al crear coordinador');
+      if (error instanceof Error) {
+        toast.error(error.message || 'Error al crear coordinador');
+      } else {
+        toast.error('Error al crear coordinador');
+      }
     } finally {
       setLoading(false);
     }

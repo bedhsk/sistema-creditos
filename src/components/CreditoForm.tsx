@@ -84,9 +84,13 @@ export default function CreditoForm({ onClose, onSuccess }: CreditoFormProps) {
 
       toast.success('Crédito creado correctamente');
       onSuccess();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error:', error);
-      toast.error(error.message || 'Error al crear crédito');
+      if (error instanceof Error) {
+        toast.error(error.message || 'Error al crear crédito');
+      } else {
+        toast.error('Error al crear crédito');
+      }
     } finally {
       setLoading(false);
     }
@@ -174,7 +178,10 @@ export default function CreditoForm({ onClose, onSuccess }: CreditoFormProps) {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               value={formData.estado}
               onChange={(e) =>
-                setFormData({ ...formData, estado: e.target.value as any })
+                setFormData({
+                  ...formData,
+                  estado: e.target.value as typeof formData.estado,
+                })
               }
             >
               <option value="En proceso">En proceso</option>

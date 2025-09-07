@@ -158,7 +158,11 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
     ]);
   };
 
-  const updateGarantia = (index: number, field: string, value: any) => {
+  const updateGarantia = (
+    index: number,
+    field: string,
+    value: string | number
+  ) => {
     const updated = [...garantias];
     updated[index] = { ...updated[index], [field]: value };
     setGarantias(updated);
@@ -327,9 +331,13 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
 
       toast.success('Cliente creado correctamente con toda su información');
       onSuccess();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error:', error);
-      toast.error(error.message || 'Error al crear cliente');
+      if (error instanceof Error) {
+        toast.error(error.message || 'Error al crear cliente');
+      } else {
+        toast.error('Error al crear cliente');
+      }
     } finally {
       setLoading(false);
     }
@@ -627,7 +635,8 @@ export default function ClienteForm({ onClose, onSuccess }: ClienteFormProps) {
                       onChange={(e) =>
                         setFormData({
                           ...formData,
-                          estado_civil: e.target.value as any,
+                          estado_civil: e.target
+                            .value as typeof formData.estado_civil,
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"

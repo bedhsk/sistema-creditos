@@ -18,7 +18,7 @@ export default function LoginPage() {
   // Limpiar error cuando el usuario empiece a escribir
   useEffect(() => {
     if (error) setError('');
-  }, [email, password]);
+  }, [email, password, error]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,12 +26,10 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const { data, error: authError } = await supabase.auth.signInWithPassword(
-        {
-          email,
-          password,
-        }
-      );
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
       if (authError) {
         setAttempts((prev) => prev + 1);
@@ -77,7 +75,7 @@ export default function LoginPage() {
         router.push('/');
         router.refresh();
       }, 1000);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error de autenticación:', error);
 
       // Toast adicional para errores graves

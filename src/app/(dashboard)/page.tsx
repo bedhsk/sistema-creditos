@@ -111,7 +111,8 @@ export default function HomePage() {
     }
   };
 
-  const getNombreCliente = (cliente: any) => {
+  type Cliente = { primer_nombre: string; primer_apellido: string };
+  const getNombreCliente = (cliente: Cliente | null | undefined) => {
     if (!cliente) return 'N/A';
     return `${cliente.primer_nombre} ${cliente.primer_apellido}`;
   };

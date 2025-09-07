@@ -25,8 +25,6 @@ import {
   Shield,
   Users,
   Phone,
-  CreditCard,
-  Calendar,
 } from 'lucide-react';
 
 interface ExpedienteModalProps {
@@ -47,10 +45,6 @@ export default function ExpedienteModal({
   const [loading, setLoading] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    fetchAllData();
-  }, []);
-
   const fetchAllData = async () => {
     setLoading(true);
     try {
@@ -58,12 +52,17 @@ export default function ExpedienteModal({
         fetchArchivos(),
         fetchReferencias(),
         fetchBeneficiarios(),
-        fetchGarantias(),
       ]);
+    } catch (error) {
+      // handle error if needed
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchAllData();
+  }, [fetchAllData]);
 
   const fetchArchivos = async () => {
     try {
@@ -145,7 +144,7 @@ export default function ExpedienteModal({
       const fileName = `${cliente.id}/${Date.now()}.${fileExt}`;
 
       // Subir archivo a Supabase Storage
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('expedientes')
         .upload(fileName, file);
 
@@ -171,9 +170,13 @@ export default function ExpedienteModal({
 
       toast.success('Archivo subido correctamente');
       fetchArchivos();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error:', error);
-      toast.error(error.message || 'Error al subir archivo');
+      if (error instanceof Error) {
+        toast.error(error.message || 'Error al subir archivo');
+      } else {
+        toast.error('Error al subir archivo');
+      }
     } finally {
       setUploading(false);
       if (fileInputRef.current) {
@@ -211,7 +214,7 @@ export default function ExpedienteModal({
 
       toast.success('Archivo eliminado');
       fetchArchivos();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error:', error);
       toast.error('Error al eliminar archivo');
     }
