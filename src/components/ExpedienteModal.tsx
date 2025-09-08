@@ -54,6 +54,7 @@ export default function ExpedienteModal({
         fetchArchivos(),
         fetchReferencias(),
         fetchBeneficiarios(),
+        fetchGarantias(),
       ]);
     } catch (error) {
       // handle error if needed
@@ -112,7 +113,22 @@ export default function ExpedienteModal({
     }
   };
 
-  // fetchGarantias removed because it was never used
+  // Obtener garantías del cliente
+  const fetchGarantias = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('garantias')
+        .select('*')
+        .eq('cliente_id', cliente.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setGarantias(data || []);
+    } catch (error) {
+      console.error('Error al cargar garantías:', error);
+      toast.error('Error al cargar garantías');
+    }
+  };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
